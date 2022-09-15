@@ -1,0 +1,89 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+  {% include "header.html" %}
+{% endblock %}
+
+{% block navbar %}
+  {% include "nav-bar.html" %}
+{% endblock %}
+
+{% block content %}
+
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('{{post.img_url}}')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>{{post.title}}</h1>
+            <h2 class="subheading">{{post.subtitle}}</h2>
+            <span class="meta">Posted by
+              <a href="#">{{post.author.name}}</a>    <!-- name of the author object -->
+              on {{post.date}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            {{ post.body|safe }}
+          <hr>
+
+            {% if current_user.id == 1 %}
+            <div class="clearfix">
+            <a class="btn btn-primary float-right" href="{{url_for('edit_post', post_id=post.id)}}">Edit Post</a>
+            </div>
+            {% endif %}
+
+
+          {% if current_user.is_authenticated %}
+            <!-- Comment Form -->
+            {{ ckeditor.load() }}
+            {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+          {% else %}
+            <a class="btn btn-primary" href="{{url_for('login', login_to_comment=True)}}">Submit Comment</a>
+          {% endif %}
+
+          {% if post.comments %}
+          <!-- Comments List -->
+          <div class="col-lg-8 col-md-10 mx-auto comment">
+            <ul class="commentList">
+              {% for comment in post.comments %}  <!-- COMMENTS ARE A PROPERTY OF THE CURRENT 'POST' -->
+              <li>
+                <div class="commenterImage">
+                  <!-- <img src="http://0.gravatar.com/avatar/600ddbbee5e44a09fe26174478335a58?s=150&d=mm&r=g"/> -->
+                  <img src="{{comment.comment_author.email | gravatar}}"/>  <!-- UPLOADING AN AVATAR -->
+                </div>
+                <div class="commentText">
+                  {{comment.body | safe}}
+                  <span class="date sub-text">{{comment.comment_author.name}}</span>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+
+          </div>
+      </div>
+    </div>
+  </article>
+
+  <hr>
+
+  {% include "footer.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+  {% include "scripts.html" %}
+{% endblock %}
