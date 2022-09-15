@@ -8,10 +8,11 @@ from forms import CreatePostForm, RegisterUserForm, LoginForm, CommentForm
 from sqlite_db import db, BlogPost, User, Comment
 from flask_gravatar import Gravatar  # --> allows user to have an icon
 from functools import wraps
+import os
 
 # ----- INIT THE FLASK APP
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '7756b0590e09ec018d240b7640f44fee848077692aa39a4cdac74edb82303853'
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app,
